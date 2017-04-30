@@ -104,7 +104,7 @@ void EnvoiStringUdp(const char *string)
 	Trame envoi;
 	static BYTE mess[20];
 	
-	mess[0] = 0xC1;
+	mess[0] = 0xC2;
 	mess[1] = 0xFF;
 	
 	for(i=0;string[i]!='\0';i++) 

@@ -74,11 +74,11 @@ Trame AnalyseTrame(Trame t);
 #endif // __PILOTAGE_H__
 
 // Deplacements
-#define	CMD_AVANCER						0x01
-#define	CMD_PIVOTER						0x03
-#define	CMD_VIRAGE						0x04
-#define	CMD_STOP						0x05
-#define	CMD_GOTOXY						0x06
+#define	CMD_AVANCER						0x91
+#define	CMD_PIVOTER						0x93
+#define	CMD_VIRAGE						0x94
+#define	CMD_STOP						0x95
+#define	CMD_GOTOXY						0x96
 #define	CMD_RECALLAGE					0x10
 #define CMD_FINRECALLAGE				0x11
 #define CMD_FINDEPLACEMENT				0x12
@@ -124,3 +124,11 @@ Trame AnalyseTrame(Trame t);
 
 #define CMD_DEMANDE_LIDAR				0xA0
 #define CMD_REPONSE_LIDAR				0xA1
+
+#define CMD_LEDS_ON_OFF					0x01
+#define CMD_BOUTONS						0x02
+#define CMD_LED_RGB_INTENSITY			0x03
+#define CMD_LED_RGB_FREQUENCY			0x04
+#define CMD_BUZZER_INTENSITY			0x05
+#define CMD_BUZZER_FREQUENCY			0x06
+

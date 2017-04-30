@@ -21,6 +21,7 @@
 // Initialisation codeur
 // Initialisation du module ADC (+DMA)
 // Initialisation des modules PWM
+// Couche de communication entre la LED RGB + Buzzer et GoBot (manque la gestion fréquence)
 
 // Ce qui doit être fait par Nico
 // Suppression anciens codes (Asser et Servos en particulier)
@@ -29,7 +30,6 @@
 // Ce qui doit être fait
 // Gestion des LEDs via les deux TLC puis couche de communication vers GoBot
 // Gestion du LCD via I²C puis couche de communication vers GoBot
-// Couche de communication entre la LED RGB + Buzzer et GoBot
 // Couche de communication entre les boutons/interrupteurs et GoBot
 // ==> Lancer un match automatiquement avec GoBot
 
@@ -93,35 +93,35 @@ int main(void)
 	Trame Jack;
 	static BYTE Presence[2];
 	Jack.nbChar = 2;
-	Presence[0] = 0xC1;
+	Presence[0] = 0xC2;
 	Presence[1] = CMD_DEPART_JACK;
 	Jack.message = Presence;
 
 	Trame Couleur_Equipe;
 	static BYTE Couleur[3];
 	Couleur_Equipe.nbChar = 3;
-	Couleur[0] = 0xC1;
+	Couleur[0] = 0xC2;
 	Couleur[1] = CMD_REPONSE_COULEUR_EQUIPE;
 	Couleur[2] = PORTBbits.RB4;
 	Couleur_Equipe.message = Couleur;
 
 	Trame envoiFin;
 	static BYTE mess[2];
-	mess[0] = 0xC1;
+	mess[0] = 0xC2;
 	mess[1] = CMD_FINDEPLACEMENT;
 	envoiFin.message = mess;
 	envoiFin.nbChar = 2;
 		
 	Trame envoiBlocage;
 	static BYTE messblocage[2];
-	messblocage[0] = 0xC1;
+	messblocage[0] = 0xC2;
 	messblocage[1] = 0x13;
 	envoiBlocage.message = messblocage;
 	envoiBlocage.nbChar = 2;
 	
 	Trame envoiCalage;
 	static BYTE messcalage[2];
-	messcalage[0] = 0xC1;
+	messcalage[0] = 0xC2;
 	messcalage[1] = CMD_FINRECALLAGE;
 	envoiCalage.message = messcalage;
 	envoiCalage.nbChar = 2;

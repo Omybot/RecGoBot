@@ -100,12 +100,12 @@ void InitPWM(void)
 	PWM1CON1bits.PEN3L = 0;		// PWM1L3 pin is disabled for PWM output
 	PWM1CON1bits.PEN3H = 1;		// PWM1H3 pin is disabled for PWM output
 
-	P1DC1 = 0; // 0		==> PWM 0% (à vérifier)
-	P1DC2 = 0; // 4000	==> PWM 50%
-	P1DC3 = 0; // 8000	==> PWM 100%
+	P1DC1 = 0; // Bleu  0		==> PWM 0% (à vérifier)
+	P1DC2 = 0; // Vert  4000	==> PWM 50%
+	P1DC3 = 0; // Rouge 8000	==> PWM 100%
 
 	P2TCONbits.PTEN = 1; 		// PWM Time base is On
-	P2TPER = 4000 - 1; 			// 10kHz PWM (4000 counts @40MIPS)
+	P2TPER = 30000 - 1; 			// 1.333kHz PWM (30000 counts @40MIPS)
 	PWM2CON1bits.PEN1L = 0;		// PWM2L1 pin is disabled for PWM output
 	PWM2CON1bits.PEN1H = 1;		// PWM2L2 pin is disabled for PWM output
 
