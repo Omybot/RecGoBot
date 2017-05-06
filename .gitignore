@@ -2,16 +2,16 @@ Makefile
 
 NMakefile
 
-RecMove.cof
+*.cof
 
-RecMove.hex
+*.hex
 
-RecMove.map
-RecMove.mcw
-RecRP.map
-RecMove.mcs
-RecRP.mcs
-RecRP.mptags
-RecRP.tagsrc
+*.map
+*.mcw
+*.map
+*.mcs
+*.mcs
+*.mptags
+*.tagsrc
 
 Objects - RecRP
