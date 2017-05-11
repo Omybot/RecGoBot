@@ -5,8 +5,8 @@ device=dsPIC33FJ128MC804
 [PATH_INFO]
 BuildDirPolicy=BuildDirIsProjectDir
 dir_src=
-dir_bin=
-dir_tmp=.\Objects - RecRP
+dir_bin=bin
+dir_tmp=obj
 dir_sin=
 dir_inc=.\Include;.;%PROGRAMFILES%\Microchip\MPLAB C30\include
 dir_lib=
