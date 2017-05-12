@@ -1,11 +1,7 @@
 #include "Pilotage.h"
-#include "uart2.h"
-#include <uart2.h>
 #include <math.h>
 
 // ATTENTION /!\ Ces fonctions ne doivent pas être bloquantes
-
-#define UART_BUFFER_SIZE 100
 
 void delay(void)
 {
@@ -82,7 +78,7 @@ Trame ReponseEcho()
 	static BYTE tableau[2];
 	trame.nbChar = 2;
 
-	tableau[0] = 0xC2;
+	tableau[0] = UDP_ID;
 	tableau[1] = 0xF5;
 	
 	trame.message = tableau;
@@ -90,6 +86,21 @@ Trame ReponseEcho()
 	return trame;
 }
 
+void PiloteLedRGB(int led, int r, int g, int b)
+{
+	if(led == LED_RGB_MAIN)
+	{
+		P1DC1 = b<<5;
+		P1DC2 = g<<5;
+		P1DC3 = r<<5;
+	}	
+}
+
+void PiloteBuzzer(int frequency, int volume)
+{
+	P2DC1 = frequency<<7;
+}	
+	
 // Analyse la trame recue et renvoie vers la bonne fonction de pilotage
 // Trame t : Trame ethernet recue
 Trame AnalyseTrame(Trame t)
@@ -99,14 +110,14 @@ Trame AnalyseTrame(Trame t)
 	
 	retour = t;
 
-	// Les messages ne commencant pas par MY_ID ne nous sont pas adressés (RecGoBot)
-	if(t.message[0] != MY_ID)
+	// Les messages ne commencant pas par UDP_ID ne nous sont pas adressés (RecGoBot)
+	if(t.message[0] != UDP_ID)
 		return t;
 
 	switch(t.message[1])
 	{
-		case CMD_DEBUG:
-			param1 = t.message[3];							// Numero
+		case TRAME_DEBUG:
+			param1 = t.message[2];							// Numero
 			switch(param1)
 			{
 				case 0:
@@ -142,28 +153,26 @@ Trame AnalyseTrame(Trame t)
 			}
 		break;
 
-		case CMD_ECHO:
+		case TRAME_TEST_CONNEXION:
 			retour = ReponseEcho();
 		break;
 
-		case CMD_RESET_CARTE:
+		case TRAME_RESET:
 			Reset();
 		break;
 
-		case CMD_LED_RGB_INTENSITY:
-			P1DC1 = t.message[4]<<5;
-			P1DC2 = t.message[3]<<5;
-			P1DC3 = t.message[2]<<5;
+		case TRAME_LED_RGB:
+			param1 = t.message[2];	// ID led
+			param2 = t.message[3];	// R
+			param3 = t.message[4];	// G
+			param4 = t.message[5];	// B
+			PiloteLedRGB(param1, param2, param3, param4);
 			break;
 
-		case CMD_BUZZER_INTENSITY:
-			P2DC1 = t.message[2]<<7;
-			break;
-
-		case CMD_LED_RGB_FREQUENCY:
-			break;
-
-		case CMD_BUZZER_FREQUENCY:
+		case TRAME_BUZZER:
+			param1 = t.message[2] * 256 + t.message[3];	// Frequence
+			param2 = t.message[4];						// Volume
+			PiloteBuzzer(param1, param2);
 			break;
 		
 	}

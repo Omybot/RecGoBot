@@ -65,8 +65,8 @@ int main(void)
 
 	Trame envoiBouton;
 	static BYTE messBouton[4];
-	messBouton[0] = MY_ID;
-	messBouton[1] = CMD_BOUTONS;
+	messBouton[0] = UDP_ID;
+	messBouton[1] = TRAME_CAPTEUR_ONOFF_RESP;
 	envoiBouton.message = messBouton;
 	envoiBouton.nbChar = 4;
 	
