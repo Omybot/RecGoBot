@@ -18,6 +18,7 @@ void delayms(void);
 
 // Controles
 void PiloteLedRGB(int led, int r, int g, int b);
+void PiloteLed(int led, int statut);
 
 // Diagnostic
 Trame PiloteDebug0(Trame t);
@@ -63,7 +64,7 @@ Trame AnalyseTrame(Trame t);
 // Actionneurs
 #define TRAME_ARMER_JACK 0x70
 #define TRAME_PILOTAGE_ONOFF 0x65
-#define TRAME_PILOTAGE_VALEURS 0x62
+#define TRAME_LED 0x62
 #define TRAME_POSITION_MOTEUR 0x66
 #define TRAME_VITESSE_MOTEUR 0x67
 #define TRAME_ACCELERATION_MOTEUR 0x68

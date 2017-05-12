@@ -96,6 +96,11 @@ void PiloteLedRGB(int led, int r, int g, int b)
 	}	
 }
 
+void PiloteLed(int led, int statut)
+{
+	// TODO
+}	
+
 void PiloteBuzzer(int frequency, int volume)
 {
 	P2DC1 = frequency<<7;
@@ -162,7 +167,7 @@ Trame AnalyseTrame(Trame t)
 		break;
 
 		case TRAME_LED_RGB:
-			param1 = t.message[2];	// ID led
+			param1 = t.message[2]; 	// N° LED
 			param2 = t.message[3];	// R
 			param3 = t.message[4];	// G
 			param4 = t.message[5];	// B
@@ -173,6 +178,12 @@ Trame AnalyseTrame(Trame t)
 			param1 = t.message[2] * 256 + t.message[3];	// Frequence
 			param2 = t.message[4];						// Volume
 			PiloteBuzzer(param1, param2);
+			break;
+			
+		case TRAME_LED:
+			param1 = t.message[2]; // N° LED
+			param2 = t.message[3]; // Statut (0=Off, 1=Rouge, 2=Orange, 3=Vert)
+			PiloteLed(param1, param2);
 			break;
 		
 	}
