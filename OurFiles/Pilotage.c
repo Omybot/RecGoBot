@@ -1,6 +1,8 @@
 #include "Pilotage.h"
 #include <math.h>
 
+extern unsigned int ADC_Results[9];
+
 // ATTENTION /!\ Ces fonctions ne doivent pas être bloquantes
 
 void delay(void)
@@ -90,9 +92,9 @@ void PiloteLedRGB(int led, int r, int g, int b)
 {
 	if(led == LED_RGB_MAIN)
 	{
-		P1DC1 = b<<5;
-		P1DC2 = g<<5;
-		P1DC3 = r<<5;
+		P1DC1 = b<<4;
+		P1DC2 = g<<4;
+		P1DC3 = r<<4;
 	}	
 }
 
@@ -105,6 +107,40 @@ void PiloteBuzzer(int frequency, int volume)
 {
 	P2DC1 = frequency<<7;
 }	
+
+Trame Retour_Valeurs_Analogiques(void)
+{
+	Trame Etat_Valeurs;
+	static BYTE Valeurs[20]; // 20 !!!!!!!!!!! PAS 4 !!!!
+	Etat_Valeurs.nbChar = 20;
+
+
+	Valeurs[0] = UDP_ID;
+	Valeurs[1] = CMD_REPONSE_VALEURS_ANALOGIQUES;
+	Valeurs[2] = ADC_Results[0] >> 8;
+	Valeurs[3] = ADC_Results[0] & 0xFF;
+	Valeurs[4] = ADC_Results[1] >> 8;
+	Valeurs[5] = ADC_Results[1] & 0xFF;
+	Valeurs[6] = ADC_Results[2] >> 8;
+	Valeurs[7] = ADC_Results[2] & 0xFF;
+	Valeurs[8] = ADC_Results[3] >> 8;
+	Valeurs[9] = ADC_Results[3] & 0xFF;
+	Valeurs[10] = ADC_Results[4] >> 8;
+	Valeurs[11] = ADC_Results[4] & 0xFF;
+	Valeurs[12] = ADC_Results[5] >> 8;
+	Valeurs[13] = ADC_Results[5] & 0xFF;
+	Valeurs[14] = ADC_Results[6] >> 8;
+	Valeurs[15] = ADC_Results[6] & 0xFF;
+	Valeurs[16] = ADC_Results[7] >> 8;
+	Valeurs[17] = ADC_Results[7] & 0xFF;
+	Valeurs[18] = ADC_Results[8] >> 8;
+	Valeurs[19] = ADC_Results[8] & 0xFF;
+
+	Etat_Valeurs.message = Valeurs;
+
+	return Etat_Valeurs;
+}
+
 	
 // Analyse la trame recue et renvoie vers la bonne fonction de pilotage
 // Trame t : Trame ethernet recue
@@ -184,6 +220,9 @@ Trame AnalyseTrame(Trame t)
 			param1 = t.message[2]; // N° LED
 			param2 = t.message[3]; // Statut (0=Off, 1=Rouge, 2=Orange, 3=Vert)
 			PiloteLed(param1, param2);
+			break;
+		case CMD_DEMANDE_VALEURS_ANALOGIQUES:
+			return Retour_Valeurs_Analogiques();
 			break;
 		
 	}

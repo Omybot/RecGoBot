@@ -44,7 +44,7 @@ static void InitAppConfig(void);
 long position_codeur;
 int tours_codeur;
 int inputChanged, inputChannelChanged;
-extern unsigned int ADC_Results[8];
+extern unsigned int ADC_Results[9];
 
 void _ISR __attribute__((__no_auto_psv__)) _AddressError(void)
 {
@@ -189,10 +189,10 @@ void __attribute__ ((interrupt, no_auto_psv)) _T4Interrupt(void)
 	int channelNo;
 	double measures[4];
 
-	measures[0] = (double)ADC_Results[4]*COEFF_TENSION_ADC;
-	measures[1] = (double)ADC_Results[5]*COEFF_TENSION_ADC;
-	measures[2] = (double)ADC_Results[6]*COEFF_TENSION_ADC;
-	measures[3] = (double)ADC_Results[7]*COEFF_TENSION_ADC;
+	measures[0] = (double)ADC_Results[4]*(double)COEFF_TENSION_ADC;
+	measures[1] = (double)ADC_Results[5]*(double)COEFF_TENSION_ADC;
+	measures[2] = (double)ADC_Results[6]*(double)COEFF_TENSION_ADC;
+	measures[3] = (double)ADC_Results[7]*(double)COEFF_TENSION_ADC;
 
 	channelNo = 0;
 

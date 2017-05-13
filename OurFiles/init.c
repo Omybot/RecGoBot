@@ -4,7 +4,7 @@
 
 unsigned int  BufferA[MAX_CHNUM+1][SAMP_BUFF_SIZE] __attribute__((space(dma),aligned(256)));
 unsigned int  BufferB[MAX_CHNUM+1][SAMP_BUFF_SIZE] __attribute__((space(dma),aligned(256)));
-unsigned int ADC_Results[8],DmaBuffer = 0;
+unsigned int ADC_Results[9],DmaBuffer = 0;
 
 void InitClk(void)
 {	
@@ -134,9 +134,9 @@ void InitADC(void)
 	AD1CON3bits.ADRC = 0;		// ADC Clock is derived from Systems Clock
 	AD1CON3bits.ADCS = 63;		// ADC Conversion Clock Tad=Tcy*(ADCS+1)= (1/40M)*64 = 1.6us (625Khz)
 								// ADC Conversion Time for 10-bit Tc=12*Tab = 19.2us	
-
+	
 	AD1CON1bits.ADDMABM = 0; 	// DMA buffers are built in scatter/gather mode
-	AD1CON2bits.SMPI    = (NUM_CHS2SCAN-1);	// 6 ADC Channel is scanned
+	AD1CON2bits.SMPI    = (NUM_CHS2SCAN-1);	// 9 ADC Channel are scanned
 	AD1CON4bits.DMABL   = 3;	// Each buffer contains 8 words
 
 	//AD1CSSH/AD1CSSL: A/D Input Scan Selection Register
@@ -144,17 +144,23 @@ void InitADC(void)
 	AD1CSSLbits.CSS1=1;		// Enable AN1 for channel scan
 	AD1CSSLbits.CSS2=1;		// Enable AN2 for channel scan
 	AD1CSSLbits.CSS3=1;		// Enable AN3 for channel scan
+	AD1CSSLbits.CSS4=1;		// Enable AN4 for channel scan
+	AD1CSSLbits.CSS5=1;		// Enable AN5 for channel scan
 	AD1CSSLbits.CSS6=1;		// Enable AN6 for channel scan
 	AD1CSSLbits.CSS7=1;		// Enable AN7 for channel scan
+	AD1CSSLbits.CSS8=1;		// Enable AN8 for channel scan
 	
  	//AD1PCFGH/AD1PCFGL: Port Configuration Register
 	AD1PCFGL=0xFFFF;
 	AD1PCFGLbits.PCFG0 = 0;	// AN0 as Analog Input
-	AD1PCFGLbits.PCFG1 = 0;	// AN1 as Analog Input 
- 	//AD1PCFGLbits.PCFG2 = 0;	// AN2 as Analog Input
-	//AD1PCFGLbits.PCFG3 = 0;	// AN3 as Analog Input 
-	//AD1PCFGLbits.PCFG6 = 0;	// AN6 as Analog Input
-	//AD1PCFGLbits.PCFG7 = 0;	// AN7 as Analog Input 
+	AD1PCFGLbits.PCFG1 = 0;	// AN1 as Analog Input
+ 	AD1PCFGLbits.PCFG2 = 0;	// AN2 as Analog Input 
+	AD1PCFGLbits.PCFG3 = 0;	// AN3 as Analog Input 
+	AD1PCFGLbits.PCFG4 = 0;	// AN4 as Analog Input  
+	AD1PCFGLbits.PCFG5 = 0;	// AN5 as Analog Input  
+	AD1PCFGLbits.PCFG6 = 0;	// AN6 as Analog Input 
+	AD1PCFGLbits.PCFG7 = 0;	// AN7 as Analog Input 
+	AD1PCFGLbits.PCFG8 = 0;	// AN8 as Analog Input 
 	
 	IFS0bits.AD1IF   = 0;		// Clear the A/D interrupt flag bit
 	IEC0bits.AD1IE   = 0;		// Do Not Enable A/D interrupt 
@@ -180,27 +186,39 @@ void InitDMA(void)
 
 void __attribute__((interrupt, no_auto_psv)) _DMA5Interrupt(void)
 {
-	unsigned char i;
+	static int seuil[2]={2500,2500};
+	static int hysteresis[2]={50,50};
+	unsigned int telemetre[2];
+	static unsigned char i,cpt_secu_courant[2]={0,0};
 	ADC_Results[0]=0;
 	ADC_Results[1]=0;
 	ADC_Results[2]=0;
 	ADC_Results[3]=0;
 	ADC_Results[4]=0;
 	ADC_Results[5]=0;
+	ADC_Results[6]=0;
+	ADC_Results[7]=0;
+	ADC_Results[8]=0;
 	if(DmaBuffer == 0)
 	{
 		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[0] += BufferA[0][i];
 		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[1] += BufferA[1][i];
 		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[2] += BufferA[2][i];
 		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[3] += BufferA[3][i];
-		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[4] += BufferA[6][i];
-		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[5] += BufferA[7][i];
+		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[4] += BufferA[4][i];
+		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[5] += BufferA[5][i];
+		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[6] += BufferA[6][i];
+		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[7] += BufferA[7][i];
+		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[8] += BufferA[8][i];
 		ADC_Results[0] /= SAMP_BUFF_SIZE;
 		ADC_Results[1] /= SAMP_BUFF_SIZE;
 		ADC_Results[2] /= SAMP_BUFF_SIZE;
 		ADC_Results[3] /= SAMP_BUFF_SIZE;
 		ADC_Results[4] /= SAMP_BUFF_SIZE;
 		ADC_Results[5] /= SAMP_BUFF_SIZE;
+		ADC_Results[6] /= SAMP_BUFF_SIZE;
+		ADC_Results[7] /= SAMP_BUFF_SIZE;
+		ADC_Results[8] /= SAMP_BUFF_SIZE;
 	}
 	else
 	{
@@ -208,16 +226,22 @@ void __attribute__((interrupt, no_auto_psv)) _DMA5Interrupt(void)
 		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[1] += BufferB[1][i];
 		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[2] += BufferB[2][i];
 		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[3] += BufferB[3][i];
-		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[4] += BufferB[6][i];
-		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[5] += BufferB[7][i];
+		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[4] += BufferB[4][i];
+		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[5] += BufferB[5][i];
+		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[6] += BufferB[6][i];
+		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[7] += BufferB[7][i];
+		for(i=0;i<SAMP_BUFF_SIZE;i++)	ADC_Results[8] += BufferB[8][i];
 		ADC_Results[0] /= SAMP_BUFF_SIZE;
 		ADC_Results[1] /= SAMP_BUFF_SIZE;
 		ADC_Results[2] /= SAMP_BUFF_SIZE;
 		ADC_Results[3] /= SAMP_BUFF_SIZE;
 		ADC_Results[4] /= SAMP_BUFF_SIZE;
 		ADC_Results[5] /= SAMP_BUFF_SIZE;
+		ADC_Results[6] /= SAMP_BUFF_SIZE;
+		ADC_Results[7] /= SAMP_BUFF_SIZE;
+		ADC_Results[8] /= SAMP_BUFF_SIZE;
 	}
-	
+
 	DmaBuffer ^= 1;
 
 	IFS3bits.DMA5IF = 0;		// Clear the DMA0 Interrupt Flag

@@ -20,7 +20,7 @@ static double threshValues[THRESH_COUNT] = {	1.519,
 												2.601,
 												2.768,
 												2.969,
-												3.97,
+												3.197,
 												10.0};
 
 static int antiReboundState[CHANNELS][INPUTS_BY_CHANNEL];

@@ -19,7 +19,7 @@ int MultiplexPow(int val)
 	int i, j;
 	
 	j = 1;
-	for (i = 1; i < val; i++)
+	for (i = 0; i < val; i++)
 	{
 		j *= 2;	
 	}
@@ -28,7 +28,7 @@ int MultiplexPow(int val)
 
 char MultiplexGetMask(double analogValue)
 {
-	char mask = 0;
+	unsigned char mask = 0;
 	char found = 0;
 
 	while (!found && mask < THRESH_COUNT)

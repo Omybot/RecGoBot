@@ -15,8 +15,8 @@
 
 typedef struct Trame
 {
-	BYTE* message;
 	int nbChar;
+	BYTE* message;
 } Trame;
 
 #define UDP_ID 0xC2

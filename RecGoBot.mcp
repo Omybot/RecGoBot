@@ -174,7 +174,7 @@ file_014=TCPIP Stack\ARP.c
 file_015=TCPIP Stack\SPIFlash.c
 file_016=TCPIP Stack\TCP.c
 file_017=TCPIP Stack\Reboot.c
-file_018=C:\Users\Kryss\Desktop\RecGoBot\OurFiles\Multiplex.c
+file_018=OurFiles\Multiplex.c
 file_019=HardwareProfile.h
 file_020=TCPIPConfig.h
 file_021=Include\TCPIP Stack\Delay.h
@@ -198,7 +198,7 @@ file_038=OurFiles\init.h
 file_039=Include\TCPIP Stack\ARP.h
 file_040=Include\TCPIP Stack\SPIFlash.h
 file_041=Include\TCPIP Stack\Reboot.h
-file_042=C:\Users\Kryss\Desktop\RecGoBot\OurFiles\Multiplex.h
+file_042=OurFiles\Multiplex.h
 [SUITE_INFO]
 suite_guid={479DDE59-4D56-455E-855E-FFF59A3DB57E}
 suite_state=

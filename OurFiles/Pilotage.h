@@ -11,6 +11,7 @@
 #define FALLING_EDGE 0 
 
 
+
 //Delay
 void delay(void);
 void delays(void);
@@ -32,6 +33,7 @@ Trame PiloteDebug7(Trame t);
 Trame PiloteDebug8(Trame t);
 Trame PiloteDebug9(Trame t);
 void PiloteBuzzer(int frequency, int volume);
+Trame Retour_Valeurs_Analogiques(void);
 
 //Analyse Trame
 Trame ReponseEcho(void);
@@ -107,6 +109,10 @@ Trame AnalyseTrame(Trame t);
 #define TRAME_UART2_ENVOI 0xA2
 #define TRAME_UART2_RECEPTION 0xA3
 #define TRAME_UART_BAUDRATE 0x61
+
+// Capteurs
+#define CMD_DEMANDE_VALEURS_ANALOGIQUES	0x76
+#define CMD_REPONSE_VALEURS_ANALOGIQUES	0x77
 
 // Controles
 #define TRAME_LCD_DISPLAY 0xB0
