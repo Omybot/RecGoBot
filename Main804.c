@@ -10,13 +10,14 @@
 #include <math.h>
 #include <p33FJ128MC804.h>
 #include "OurFiles/Pilotage.h"
+#include "OurFiles/Multiplex.h"
 
 // Ce qui est fait
 // Configuration Ethernet 
 // Initialisation codeur
 // Initialisation du module ADC (+DMA)
 // Initialisation des modules PWM
-// Couche de communication entre la LED RGB + Buzzer et GoBot (manque la gestion fréquence)
+// Couche de communication entre la LED RGB + Buzzer et GoBot (manque la 0gestion fréquence)
 
 // Ce qui doit être fait par Nico
 // Suppression anciens codes (Asser et Servos en particulier)
@@ -40,13 +41,10 @@ APP_CONFIG AppConfig;
 
 static void InitAppConfig(void);
 
-
 long position_codeur;
 int tours_codeur;
-unsigned int prd_envoi_position = 100;
-unsigned char motor_flag=0,datalogger_blocker=0;
-double position_lock;
-unsigned int datalogger_counter=0,flag=0,courrier=0,PID_ressource_used;
+int inputChanged, inputChannelChanged;
+extern unsigned int ADC_Results[8];
 
 void _ISR __attribute__((__no_auto_psv__)) _AddressError(void)
 {
@@ -61,7 +59,8 @@ void _ISR __attribute__((__no_auto_psv__)) _StackError(void)
 
 int main(void)
 {
-	Trame trame;		
+	int i;
+	Trame trame;	
 
 	Trame envoiBouton;
 	static BYTE messBouton[4];
@@ -70,6 +69,9 @@ int main(void)
 	envoiBouton.message = messBouton;
 	envoiBouton.nbChar = 4;
 	
+	inputChanged = -1;
+	inputChannelChanged = -1;
+
 	InitClk(); 		// Initialisation de l'horloge
 	InitPorts(); 	// Initialisation des ports E/S
 	Init_Timer4();	// Initialisation Timer4
@@ -93,6 +95,8 @@ int main(void)
 	InitADC();
 	InitDMA();
 
+	//MultiplexInit();
+
 	DelayMs(500); 
 
 	while(1)
@@ -107,6 +111,14 @@ int main(void)
 			// Réponse UDP
 			trame = AnalyseTrame(trame);
 			EnvoiUserUdp(trame);
+		}
+
+		if(inputChanged != -1)
+		{
+			messBouton[2] = inputChannelChanged * 4 + inputChanged;
+			messBouton[3] = MultiplexGetState(inputChannelChanged, inputChanged);
+			EnvoiUserUdp(envoiBouton);
+			inputChanged = -1;
 		}
 
         StackApplications();
@@ -171,6 +183,26 @@ static void InitAppConfig(void)
 void __attribute__ ((interrupt, no_auto_psv)) _T4Interrupt(void) 
 {
 	// Interruption sur base de temps 1ms
+
+	// Cherche un input qui a changé d'état
+
+	int channelNo;
+	double measures[4];
+
+	measures[0] = (double)ADC_Results[4]*COEFF_TENSION_ADC;
+	measures[1] = (double)ADC_Results[5]*COEFF_TENSION_ADC;
+	measures[2] = (double)ADC_Results[6]*COEFF_TENSION_ADC;
+	measures[3] = (double)ADC_Results[7]*COEFF_TENSION_ADC;
+
+	channelNo = 0;
+
+	while (inputChanged == -1 && channelNo < 4)
+	{
+		inputChanged = MultiplexAddMeasure(channelNo , measures[channelNo]);
+		inputChannelChanged = channelNo;
+		channelNo++;
+	}
+
 	IFS1bits.T4IF = 0;
 }
 

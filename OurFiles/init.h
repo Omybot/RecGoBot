@@ -15,3 +15,4 @@ void Init_Interrupt_Priority(void);
 #define  SAMP_BUFF_SIZE	 		8		// Size of the input buffer per analog input
 #define  NUM_CHS2SCAN			8		// Number of channels enabled for channel scan
 
+#define COEFF_TENSION_ADC 0.0008056640625
