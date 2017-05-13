@@ -156,7 +156,7 @@
 #define MY_DEFAULT_MAC_BYTE3            (0xA3)	// an ENCX24J600 or ZeroG ZG2100
 #define MY_DEFAULT_MAC_BYTE4            (0x00)	// and wish to use the internal
 #define MY_DEFAULT_MAC_BYTE5            (0x00)	// factory programmed MAC
-#define MY_DEFAULT_MAC_BYTE6            (0x01)	// address instead.
+#define MY_DEFAULT_MAC_BYTE6            (0x02)	// address instead.
 
 #define MY_DEFAULT_IP_ADDR_BYTE1        (10ul) // IP Address / Adresse IP
 #define MY_DEFAULT_IP_ADDR_BYTE2        (1ul)  // 10.1.0.12

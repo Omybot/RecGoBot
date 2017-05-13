@@ -1,4 +1,5 @@
 #include "Pilotage.h"
+#include "init.h"
 #include <math.h>
 
 extern unsigned int ADC_Results[9];
@@ -74,18 +75,25 @@ Trame PiloteDebug9(Trame t)
 	return t;
 }
 
-Trame ReponseEcho()
+Trame RetourTension()
 {
-	Trame trame;
-	static BYTE tableau[2];
-	trame.nbChar = 2;
+	BYTE vbat[2];
+	static Trame trameTension;
+	static BYTE msgTension[4];
 
-	tableau[0] = UDP_ID;
-	tableau[1] = 0xF5;
+	long bat = (float)(ADC_Results[8] * COEFF_TENSION_ADC * 8.48745520044242) * 100;
+
+	vbat[0] = bat >> 8;
+	vbat[1] = bat & 0xFF;	
+	  	
+	trameTension.nbChar = 4;
+	trameTension.message = msgTension;
+	msgTension[0] = UDP_ID;
+	msgTension[1] = TRAME_TENSION_BATTERIE;
+	msgTension[2] = (BYTE) vbat[0];
+	msgTension[3] = (BYTE) vbat[1];
 	
-	trame.message = tableau;
-	
-	return trame;
+	return trameTension;
 }
 
 void PiloteLedRGB(int led, int r, int g, int b)
@@ -195,7 +203,7 @@ Trame AnalyseTrame(Trame t)
 		break;
 
 		case TRAME_TEST_CONNEXION:
-			retour = ReponseEcho();
+			retour = RetourTension();
 		break;
 
 		case TRAME_RESET:

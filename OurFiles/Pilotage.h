@@ -36,7 +36,7 @@ void PiloteBuzzer(int frequency, int volume);
 Trame Retour_Valeurs_Analogiques(void);
 
 //Analyse Trame
-Trame ReponseEcho(void);
+Trame RetourTension(void);
 Trame AnalyseTrame(Trame t);
 
 #endif // __PILOTAGE_H__
@@ -117,3 +117,7 @@ Trame AnalyseTrame(Trame t);
 // Controles
 #define TRAME_LCD_DISPLAY 0xB0
 #define TRAME_LED_RGB 0xB1
+
+// Diagnostique
+#define TRAME_TEST_CONNEXION 0xF0
+#define TRAME_TENSION_BATTERIE 0xF5
