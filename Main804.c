@@ -11,7 +11,6 @@
 #include <p33FJ128MC804.h>
 #include "OurFiles/Pilotage.h"
 #include "OurFiles/Multiplex.h"
-
 // Ce qui est fait
 // Configuration Ethernet 
 // Initialisation codeur
@@ -41,6 +40,9 @@ APP_CONFIG AppConfig;
 
 static void InitAppConfig(void);
 
+
+unsigned char leds_change;
+unsigned int rouge,vert;
 long position_codeur;
 int tours_codeur;
 int inputChanged, inputChannelChanged;
@@ -74,6 +76,7 @@ int main(void)
 
 	InitClk(); 		// Initialisation de l'horloge
 	InitPorts(); 	// Initialisation des ports E/S
+	
 	Init_Timer4();	// Initialisation Timer4
 	InitQEI(); 		// Initialisation des entrées en quadrature
 	InitPWM();		// Configuration du module PWM 
@@ -84,18 +87,38 @@ int main(void)
 	
 	// Initialize Stack and application related NV variables into AppConfig.
 	InitAppConfig();
-	
+
 	UDPInit();
     StackInit();	
  	UDPPerformanceTask();
 	InitUserUdp();
-	
 	Init_Interrupt_Priority();							
-	//InitUART2();	
 	InitADC();
 	InitDMA();
+	//MultiplexInit(); // A MARCHE PO
 
-	//MultiplexInit();
+	// Init SPI0 (Leds)
+	SPI2CON1bits.MODE16 = 1;	// Transmission 16 bits
+	SPI2CON1bits.CKE = 1;	// SDO change lors d'un front SCK descendant
+	SPI2CON1bits.MSTEN = 1;	// Master mode	
+	SPI2CON1bits.SPRE = 0b110;	// Secondary prescaler 2:1
+	SPI2CON1bits.PPRE = 0b11; 	// Primary prescaler 1:1
+
+	SPI2STATbits.SPIEN = 1;
+
+	
+	
+	/*while(1){
+	SPI2BUF = 0x0FF0;
+	DelayMs(1);
+	SPI2BUF = 0xFF00;
+	DelayMs(1);
+	TLC_LE = 0;
+	TLC_LE = 1;
+	TLC_LE = 0;
+	DelayMs(200);
+	
+	}*/
 
 	DelayMs(500); 
 
@@ -182,6 +205,7 @@ static void InitAppConfig(void)
 
 void __attribute__ ((interrupt, no_auto_psv)) _T4Interrupt(void) 
 {
+	static unsigned char etat_leds = 0;
 	// Interruption sur base de temps 1ms
 
 	// Cherche un input qui a changé d'état
@@ -203,6 +227,26 @@ void __attribute__ ((interrupt, no_auto_psv)) _T4Interrupt(void)
 		channelNo++;
 	}
 
+	switch(etat_leds++)
+	{
+		case 0:	if(leds_change)
+					leds_change=0;
+				else
+					etat_leds=0;
+				break;
+		case 1:	SPI2BUF = rouge;
+				break;
+		case 2:	SPI2BUF = vert;
+				break;
+		case 3:	TLC_LE = 1;
+				break;
+		case 4:	TLC_LE = 0;
+				break;
+		case 5:	leds_change=0;
+				etat_leds=0;
+				break;
+		
+	}
 	IFS1bits.T4IF = 0;
 }
 

@@ -32,10 +32,10 @@ void InitPorts()
 	TRISAbits.TRISA2=1; // OSC - Oscillateur
 	TRISAbits.TRISA3=1; // Port I/O - Port I/O
 	TRISAbits.TRISA4=0; // RST - Ethernet RST
-	TRISAbits.TRISA7=0; // TLC.!OE - Driver leds
+	TRISAbits.TRISA7=0; // TLC.LE - Driver leds
 	TRISAbits.TRISA8=1; // Port I/O - Port I/O
 	TRISAbits.TRISA9=0; // CS - Ethernet CS
-	TRISAbits.TRISA10=0; // TLC.LE - Driver leds
+	TRISAbits.TRISA10=0; // TLC.!OE - Driver leds
 	TRISBbits.TRISB0=1; // AN2 - Port I/O
 	TRISBbits.TRISB1=1; // AN3 - Port I/O
 	TRISBbits.TRISB2=1; // MUX1 - Ensemble Interrupteurs
@@ -47,9 +47,9 @@ void InitPorts()
 	TRISBbits.TRISB8=1; // I²C - SCL - Port I²C
 	TRISBbits.TRISB9=1; // I²C - SDA - Port I²C
 	TRISBbits.TRISB10=0; // Led RGB - Led RGB
-	TRISBbits.TRISB11=0; // TLC.SDO0 - Driver leds
+	TRISBbits.TRISB11=0; // TLC.SDO2 - Driver leds
 	TRISBbits.TRISB12=0; // Led RGB - Led RGB
-	TRISBbits.TRISB13=0; // TLC.SCK0 - Driver leds
+	TRISBbits.TRISB13=0; // TLC.SCK2 - Driver leds
 	TRISBbits.TRISB14=0; // Led RGB - Led RGB
 	TRISBbits.TRISB15=1; // Port I/O - Port I/O
 	TRISCbits.TRISC0=1; // MUX3 - Boutons 1 à 4
@@ -63,11 +63,18 @@ void InitPorts()
 	TRISCbits.TRISC8=1; // QE1B - Codeur
 	TRISCbits.TRISC9=1; // QE1A - Codeur
 	
-	//Configuration des ports pour la liaison SPI avec le module Ethernet
+	// Module SPI1 ==> Contrôleur Ethernet (ENC28J60)
 	RPOR9bits.RP19R   = 0b00111; // SDO1 		<==> RP19 RC4 // Inversion SDO/SCK par rapport à RecBase
 	RPOR10bits.RP20R  = 0b01000; // SCK1 		<==> RP20 RC3
 	RPINR20bits.SDI1R = 21     ; // SDI1 		<==> RP21 RC5
 	
+	// Module SPI0 ==> Contrôleur leds (TLC5925)
+	RPOR5bits.RP11R   = 0b01010; // SDO2 		<==> RP11 RB11
+	RPOR6bits.RP13R  = 0b01011; // SCK2 		<==> RP13 RB13
+	
+	TLC_OE=0;
+	TLC_LE=0;
+
 }
 
 void Init_Timer4(void)

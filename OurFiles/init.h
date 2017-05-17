@@ -6,7 +6,6 @@ void InitQEI(void);
 void Init_Timer2(void);
 void Init_Timer5(void);
 void Init_Timer4(void);
-void InitUART2(void);
 void InitADC(void);
 void InitDMA(void);
 void Init_Interrupt_Priority(void);
@@ -16,3 +15,8 @@ void Init_Interrupt_Priority(void);
 #define  NUM_CHS2SCAN			9		// Number of channels enabled for channel scan
 
 #define COEFF_TENSION_ADC 0.0008056640625
+
+#define TLC_LE LATAbits.LATA7
+#define TLC_OE LATAbits.LATA10
+
+
