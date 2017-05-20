@@ -3,6 +3,9 @@
 #include <math.h>
 
 extern unsigned int ADC_Results[9];
+extern unsigned int rouge,vert;
+extern unsigned char leds_change;
+
 
 // ATTENTION /!\ Ces fonctions ne doivent pas être bloquantes
 
@@ -108,7 +111,34 @@ void PiloteLedRGB(int led, int r, int g, int b)
 
 void PiloteLed(int led, int statut)
 {
-	// TODO
+	unsigned int mask=0;
+	switch(statut)
+	{
+		case 0: // Off
+			mask = 1 << led;
+			mask = ~mask;
+			rouge &= mask;
+			vert  &= mask;
+			break;
+		case 1: // Rouge
+			mask = 1 << led;
+			rouge |= mask;
+			mask = ~mask;
+			vert  &= mask;
+			break;
+		case 2: // Orange
+			mask = 1 << led;
+			rouge |= mask;
+			vert  |= mask;
+			break;
+		case 3: // Vert
+			mask = 1 << led;
+			vert |= mask;
+			mask = ~mask;
+			rouge &= mask;
+			break;
+	}
+	leds_change=1;
 }	
 
 void PiloteBuzzer(int frequency, int volume)
@@ -231,8 +261,7 @@ Trame AnalyseTrame(Trame t)
 			break;
 		case CMD_DEMANDE_VALEURS_ANALOGIQUES:
 			return Retour_Valeurs_Analogiques();
-			break;
-		
+			break;		
 	}
 	return retour;
 }

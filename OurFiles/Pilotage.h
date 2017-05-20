@@ -121,3 +121,6 @@ Trame AnalyseTrame(Trame t);
 // Diagnostique
 #define TRAME_TEST_CONNEXION 0xF0
 #define TRAME_TENSION_BATTERIE 0xF5
+
+// Actionneurs
+#define TRAME_LED 0x62
