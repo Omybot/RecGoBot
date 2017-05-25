@@ -11,22 +11,8 @@
 #include <p33FJ128MC804.h>
 #include "OurFiles/Pilotage.h"
 #include "OurFiles/Multiplex.h"
-// Ce qui est fait
-// Configuration Ethernet 
-// Initialisation codeur
-// Initialisation du module ADC (+DMA)
-// Initialisation des modules PWM
-// Couche de communication entre la LED RGB + Buzzer et GoBot (manque la 0gestion fréquence)
-
-// Ce qui doit être fait par Nico
-// Suppression anciens codes (Asser et Servos en particulier)
-// Multiplexage analogique des boutons poussoirs/interrupteurs
-
-// Ce qui doit être fait
-// Gestion des LEDs via les deux TLC puis couche de communication vers GoBot
+// Ce qu'il reste à faire
 // Gestion du LCD via I²C puis couche de communication vers GoBot
-// Couche de communication entre les boutons/interrupteurs et GoBot
-// ==> Lancer un match automatiquement avec GoBot
 
 
 // Bits configuration
@@ -211,16 +197,17 @@ void __attribute__ ((interrupt, no_auto_psv)) _T4Interrupt(void)
 	// Cherche un input qui a changé d'état
 
 	int channelNo;
-	double measures[4];
+	double measures[CHANNELS];
 
 	measures[0] = (double)ADC_Results[4]*(double)COEFF_TENSION_ADC;
 	measures[1] = (double)ADC_Results[5]*(double)COEFF_TENSION_ADC;
 	measures[2] = (double)ADC_Results[6]*(double)COEFF_TENSION_ADC;
 	measures[3] = (double)ADC_Results[7]*(double)COEFF_TENSION_ADC;
-
+	measures[4] = (double)ADC_Results[0]*(double)COEFF_TENSION_ADC;
+	
 	channelNo = 0;
 
-	while (inputChanged == -1 && channelNo < 4)
+	while (inputChanged == -1 && channelNo < CHANNELS)
 	{
 		inputChanged = MultiplexAddMeasure(channelNo , measures[channelNo]);
 		inputChannelChanged = channelNo;

@@ -161,8 +161,8 @@ void InitADC(void)
 	AD1PCFGL=0xFFFF;
 	AD1PCFGLbits.PCFG0 = 0;	// AN0 as Analog Input
 	AD1PCFGLbits.PCFG1 = 0;	// AN1 as Analog Input
- 	AD1PCFGLbits.PCFG2 = 0;	// AN2 as Analog Input 
-	AD1PCFGLbits.PCFG3 = 0;	// AN3 as Analog Input 
+ 	AD1PCFGLbits.PCFG2 = 1;	// AN2 as Digital Input 
+	AD1PCFGLbits.PCFG3 = 1;	// AN3 as Digital Input 
 	AD1PCFGLbits.PCFG4 = 0;	// AN4 as Analog Input  
 	AD1PCFGLbits.PCFG5 = 0;	// AN5 as Analog Input  
 	AD1PCFGLbits.PCFG6 = 0;	// AN6 as Analog Input 

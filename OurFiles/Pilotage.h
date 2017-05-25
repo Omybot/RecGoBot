@@ -10,6 +10,8 @@
 #define RISING_EDGE 1
 #define FALLING_EDGE 0 
 
+#define CAPTEUR_ONOFF_1 51
+#define CAPTEUR_ONOFF_2 52
 
 
 //Delay
@@ -34,6 +36,7 @@ Trame PiloteDebug8(Trame t);
 Trame PiloteDebug9(Trame t);
 void PiloteBuzzer(int frequency, int volume);
 Trame Retour_Valeurs_Analogiques(void);
+Trame Retour_Codeur(void);
 
 //Analyse Trame
 Trame RetourTension(void);
@@ -113,6 +116,11 @@ Trame AnalyseTrame(Trame t);
 // Capteurs
 #define CMD_DEMANDE_VALEURS_ANALOGIQUES	0x76
 #define CMD_REPONSE_VALEURS_ANALOGIQUES	0x77
+#define TRAME_CODEUR_ASK 0x21
+#define TRAME_CODEUR_RESP 0x22
+#define TRAME_CAPTEUR_ONOFF_ASK 0x74
+#define TRAME_CAPTEUR_ONOFF_RESP 0x75
+
 
 // Controles
 #define TRAME_LCD_DISPLAY 0xB0
@@ -124,3 +132,5 @@ Trame AnalyseTrame(Trame t);
 
 // Actionneurs
 #define TRAME_LED 0x62
+
+#define CODEUR_1 0x01

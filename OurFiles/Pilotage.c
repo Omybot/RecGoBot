@@ -5,6 +5,7 @@
 extern unsigned int ADC_Results[9];
 extern unsigned int rouge,vert;
 extern unsigned char leds_change;
+extern long position_codeur;
 
 
 // ATTENTION /!\ Ces fonctions ne doivent pas être bloquantes
@@ -179,6 +180,54 @@ Trame Retour_Valeurs_Analogiques(void)
 	return Etat_Valeurs;
 }
 
+Trame Retour_Codeur(void)
+{
+	Trame Etat_Codeur;
+	static BYTE Codeur[7];
+	Etat_Codeur.nbChar = 7;
+
+	unsigned long position_U32 = position_codeur + 0x80000000;
+	
+	Codeur[0] = UDP_ID;
+	Codeur[1] = TRAME_CODEUR_RESP;
+	Codeur[2] = CODEUR_1;
+	Codeur[3] = position_U32 & 0xFF;
+	Codeur[4] = position_U32 >> 8;
+	Codeur[5] = position_U32 >> 16;
+	Codeur[6] = position_U32 >> 24;
+
+	Etat_Codeur.message = Codeur;
+
+	return Etat_Codeur;
+}
+
+Trame Retour_Capteur_OnOff(unsigned char capteur_onoff_id)
+{
+	Trame Etat_Capteur_OnOff;
+	static BYTE Capteur_OnOff[4];
+	Etat_Capteur_OnOff.nbChar = 4;
+
+
+	Capteur_OnOff[0] = UDP_ID;
+	Capteur_OnOff[1] = TRAME_CAPTEUR_ONOFF_RESP;
+	Capteur_OnOff[2] = capteur_onoff_id;
+	
+	switch(capteur_onoff_id)
+	{
+		case CAPTEUR_ONOFF_1:
+			Capteur_OnOff[3]=PORTBbits.RB0;
+			break;
+		case CAPTEUR_ONOFF_2:
+			Capteur_OnOff[3]=PORTBbits.RB1;
+			break;
+	}
+
+	
+	Etat_Capteur_OnOff.message = Capteur_OnOff;
+
+	return Etat_Capteur_OnOff;
+}
+
 	
 // Analyse la trame recue et renvoie vers la bonne fonction de pilotage
 // Trame t : Trame ethernet recue
@@ -262,6 +311,13 @@ Trame AnalyseTrame(Trame t)
 		case CMD_DEMANDE_VALEURS_ANALOGIQUES:
 			return Retour_Valeurs_Analogiques();
 			break;		
+		case TRAME_CODEUR_ASK:
+			return Retour_Codeur();
+			break;
+		case TRAME_CAPTEUR_ONOFF_ASK:
+			param1 = t.message[2];
+			return Retour_Capteur_OnOff(param1);
+			break;
 	}
 	return retour;
 }

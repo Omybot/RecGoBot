@@ -6,7 +6,7 @@ void MultiplexInit()
 
 	for (i = 0; i < CHANNELS; i++)
 	{
-		for (i = 0; i < INPUTS_BY_CHANNEL; j++)
+		for (j = 0; j < INPUTS_BY_CHANNEL; j++)
 		{
 			antiReboundState[i][j] = 0;
 			state[i][j] = 0;
