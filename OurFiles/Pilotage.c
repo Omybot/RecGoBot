@@ -218,7 +218,7 @@ Trame Retour_Capteur_OnOff(unsigned char capteur_onoff_id)
 			Capteur_OnOff[3]=PORTBbits.RB0;
 			break;
 		case CAPTEUR_ONOFF_2:
-			Capteur_OnOff[3]=PORTBbits.RB1;
+			Capteur_OnOff[3]=!PORTBbits.RB1;
 			break;
 	}
 
@@ -309,14 +309,14 @@ Trame AnalyseTrame(Trame t)
 			PiloteLed(param1, param2);
 			break;
 		case CMD_DEMANDE_VALEURS_ANALOGIQUES:
-			return Retour_Valeurs_Analogiques();
+			retour = Retour_Valeurs_Analogiques();
 			break;		
 		case TRAME_CODEUR_ASK:
-			return Retour_Codeur();
+			retour = Retour_Codeur();
 			break;
 		case TRAME_CAPTEUR_ONOFF_ASK:
 			param1 = t.message[2];
-			return Retour_Capteur_OnOff(param1);
+			retour = Retour_Capteur_OnOff(param1);
 			break;
 	}
 	return retour;

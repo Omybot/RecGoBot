@@ -10,8 +10,8 @@
 #define RISING_EDGE 1
 #define FALLING_EDGE 0 
 
-#define CAPTEUR_ONOFF_1 51
-#define CAPTEUR_ONOFF_2 52
+#define CAPTEUR_ONOFF_1 0x51
+#define CAPTEUR_ONOFF_2 0x52
 
 
 //Delay
