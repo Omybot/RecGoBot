@@ -44,8 +44,8 @@ void InitPorts()
 	TRISBbits.TRISB5=1; // PGD - JTAG 
 	TRISBbits.TRISB6=1; // PGC - JTAG 
 	TRISBbits.TRISB7=1; // INT - Ethernet INT
-	TRISBbits.TRISB8=1; // I²C - SCL - Port I²C
-	TRISBbits.TRISB9=1; // I²C - SDA - Port I²C
+	TRISBbits.TRISB8=1; // I²C - SCL - Port I²C  // RxD RF Transceiver RP8
+	TRISBbits.TRISB9=1; // I²C - SDA - Port I²C  // TxD RF Transceiver RP9
 	TRISBbits.TRISB10=0; // Led RGB - Led RGB
 	TRISBbits.TRISB11=0; // TLC.SDO2 - Driver leds
 	TRISBbits.TRISB12=0; // Led RGB - Led RGB
@@ -63,6 +63,10 @@ void InitPorts()
 	TRISCbits.TRISC8=1; // QE1B - Codeur
 	TRISCbits.TRISC9=1; // QE1A - Codeur
 	
+	// Module QE1 ==> Codeur
+	RPINR14bits.QEA1R = 25     ; // QEA1 		<==> RP9 RC9
+	RPINR14bits.QEB1R = 24     ; // QEB1 		<==> RP8 RC8
+	
 	// Module SPI1 ==> Contrôleur Ethernet (ENC28J60)
 	RPOR9bits.RP19R   = 0b00111; // SDO1 		<==> RP19 RC4 // Inversion SDO/SCK par rapport à RecBase
 	RPOR10bits.RP20R  = 0b01000; // SCK1 		<==> RP20 RC3
@@ -72,10 +76,46 @@ void InitPorts()
 	RPOR5bits.RP11R   = 0b01010; // SDO2 		<==> RP11 RB11
 	RPOR6bits.RP13R  = 0b01011; // SCK2 		<==> RP13 RB13
 	
+	// UART RF Transceiver
+	RPOR4bits.RP8R = 0b00011;		// TX RP08 U1TX
+    RPINR18bits.U1RXR = 9;			// RX RP09 U1RXR
+
 	TLC_OE=0;
 	TLC_LE=0;
-
 }
+
+void InitUART1(void) 
+{
+	// U1BRG = Fcy / Desired_baudrate / 16 - 1
+    U1BRG = 2082;				// 1200 Bauds     Desired_baudrate = Fcy / ( 16 * (U1BRG +1))
+	U1MODEbits.UARTEN = 1;		// UART1 is Enabled
+	U1MODEbits.USIDL = 0;		// Continue operation at Idlestate
+	U1MODEbits.IREN = 0;		// IrDA En/Decoder is disabled
+	U1MODEbits.RTSMD = 0; 		// flow control mode
+	U1MODEbits.UEN = 0b00;		// UTX, RTX, U2CTS, U2RTS are enable and on use.
+	U1MODEbits.WAKE = 0;		// Wake-up on start bit is enabled
+	U1MODEbits.LPBACK = 0;		// Loop-back is disabled
+	U1MODEbits.ABAUD = 0;		// auto baud is disabled
+	U1MODEbits.URXINV = 0;		// No RX inversion
+	U1MODEbits.BRGH = 0;		// Low baud rate
+	U1MODEbits.PDSEL = 0b00; 	// 8bit no parity
+	U1MODEbits.STSEL = 0;		// one stop bit
+
+	U1STAbits.UTXISEL1 = 0b00;
+	U1STA &= 0xDFFF;			// clear TXINV by bit masking
+	U1STAbits.UTXBRK = 0;		// sync break tx is disabled
+	U1STAbits.UTXEN = 1;		// transmit  is enabled
+	U1STAbits.URXISEL = 0b00;	// interrupt flag bit is set when RXBUF is filled whith 1 character
+	U1STAbits.ADDEN = 0;		// address detect mode is disabled
+
+	IFS0bits.U1TXIF = 0;         // clear UART Tx interrupt flag
+	IEC0bits.U1TXIE = 0;         // enable UART Tx interrupt
+
+	IFS0bits.U1RXIF = 0;		 // clear interrupt flag of rx
+	IEC0bits.U1RXIE = 1;		 // enable rx recieved data
+}
+
+
 
 void Init_Timer4(void)
 {
@@ -122,7 +162,6 @@ void InitPWM(void)
 void InitQEI(void)
 {
 	QEI1CONbits.QEIM  = 0b111;
-	QEI1CONbits.SWPAB = 1;
 	POS1CNT = 0x0000;
 	IFS3bits.QEI1IF = 0;
 	IEC3bits.QEI1IE = 1;

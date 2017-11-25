@@ -10,6 +10,29 @@ extern long position_codeur;
 
 // ATTENTION /!\ Ces fonctions ne doivent pas être bloquantes
 
+Trame Retour_Valeurs_Numeriques(void)
+{
+	Trame Etat_Valeurs;
+	static BYTE Valeurs[8];
+	Etat_Valeurs.nbChar = 8;
+	
+
+	Valeurs[0] = UDP_ID;
+	Valeurs[1] = CMD_REPONSE_VALEURS_NUMERIQUES;
+	Valeurs[2] = PORTA>>8;
+	Valeurs[3] = PORTA&0xFF;
+	Valeurs[4] = PORTB>>8;
+	Valeurs[5] = PORTB&0xFF;
+	Valeurs[6] = PORTC>>8;
+	Valeurs[7] = PORTC&0xFF;
+	
+	
+	Etat_Valeurs.message = Valeurs;
+
+	return Etat_Valeurs;
+}
+
+
 void delay(void)
 {
     long i = 10; 
@@ -191,10 +214,10 @@ Trame Retour_Codeur(void)
 	Codeur[0] = UDP_ID;
 	Codeur[1] = TRAME_CODEUR_RESP;
 	Codeur[2] = CODEUR_1;
-	Codeur[3] = position_U32 & 0xFF;
-	Codeur[4] = position_U32 >> 8;
-	Codeur[5] = position_U32 >> 16;
-	Codeur[6] = position_U32 >> 24;
+	Codeur[3] = position_U32 >> 24;
+	Codeur[4] = position_U32 >> 16;
+	Codeur[5] = position_U32 >> 8;
+	Codeur[6] = position_U32 & 0xFF;
 
 	Etat_Codeur.message = Codeur;
 
@@ -318,6 +341,10 @@ Trame AnalyseTrame(Trame t)
 			param1 = t.message[2];
 			retour = Retour_Capteur_OnOff(param1);
 			break;
+		case CMD_DEMANDE_VALEURS_NUMERIQUES:
+			return Retour_Valeurs_Numeriques();
+		break;
+		
 	}
 	return retour;
 }

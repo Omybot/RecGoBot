@@ -13,6 +13,7 @@
 #define CAPTEUR_ONOFF_1 0x51
 #define CAPTEUR_ONOFF_2 0x52
 
+Trame Retour_Valeurs_Numeriques(void);
 
 //Delay
 void delay(void);
@@ -120,6 +121,8 @@ Trame AnalyseTrame(Trame t);
 #define TRAME_CODEUR_RESP 0x22
 #define TRAME_CAPTEUR_ONOFF_ASK 0x74
 #define TRAME_CAPTEUR_ONOFF_RESP 0x75
+#define CMD_DEMANDE_VALEURS_NUMERIQUES	0x78
+#define CMD_REPONSE_VALEURS_NUMERIQUES	0x79
 
 
 // Controles
@@ -129,6 +132,7 @@ Trame AnalyseTrame(Trame t);
 // Diagnostique
 #define TRAME_TEST_CONNEXION 0xF0
 #define TRAME_TENSION_BATTERIE 0xF5
+
 
 // Actionneurs
 #define TRAME_LED 0x62

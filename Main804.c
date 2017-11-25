@@ -29,8 +29,8 @@ static void InitAppConfig(void);
 
 unsigned char leds_change;
 unsigned int rouge,vert;
-long position_codeur;
-int tours_codeur;
+long position_codeur=0;
+int tours_codeur=0;
 int inputChanged, inputChannelChanged;
 extern unsigned int ADC_Results[9];
 
@@ -110,6 +110,7 @@ int main(void)
 
 	while(1)
   	{	
+		position_codeur = (long)POS1CNT + (long)(tours_codeur*0x10000);
 		StackTask();
 
 		// Reception UDP
@@ -243,6 +244,19 @@ void __attribute__ ((interrupt, no_auto_psv)) _QEI1Interrupt(void)
 	IFS3bits.QEI1IF = 0;
 	if((QEI1CONbits.UPDN==1) && POS1CNT < 0x8000)	tours_codeur++; // rollover
 	if((QEI1CONbits.UPDN==0) && POS1CNT > 0x8000)	tours_codeur--; // underflow
-	QEI1CONbits.QEIM = QEI2CONbits.QEIM;
-	position_codeur = (long)POS1CNT + (long)(tours_codeur*0x10000);
+	QEI1CONbits.QEIM = 0b111;
+}
+
+//Interrupt receive message UART1
+void __attribute__((interrupt,auto_psv)) _U1RXInterrupt(void)
+{
+	unsigned char recu[100],ptr_UART1;
+
+	IFS0bits.U1RXIF = 0; 		// clear RX interrupt flag
+	
+	if(U1STAbits.URXDA == 1)
+	{
+		if(ptr_UART1++<100)
+			recu[ptr_UART1]=U1RXREG;
+	}			
 }
