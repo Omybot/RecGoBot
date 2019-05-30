@@ -26,7 +26,7 @@ APP_CONFIG AppConfig;
 
 static void InitAppConfig(void);
 
-
+unsigned char first,second;
 unsigned char leds_change;
 unsigned int rouge,vert;
 long position_codeur=0;
@@ -47,7 +47,7 @@ void _ISR __attribute__((__no_auto_psv__)) _StackError(void)
 
 int main(void)
 {
-	int i;
+	int i,j;
 	Trame trame;	
 
 	Trame envoiBouton;
@@ -107,7 +107,8 @@ int main(void)
 	}*/
 
 	DelayMs(500); 
-
+	first = 1;
+	second = 0;
 	while(1)
   	{	
 		position_codeur = (long)POS1CNT + (long)(tours_codeur*0x10000);
@@ -118,6 +119,11 @@ int main(void)
 
 		if(trame.nbChar != 0)
 		{
+			if(first == 1)
+			{
+				first = 0;
+				second = 1;
+			}
 			// Réponse UDP
 			trame = AnalyseTrame(trame);
 			EnvoiUserUdp(trame);
@@ -129,6 +135,20 @@ int main(void)
 			messBouton[3] = MultiplexGetState(inputChannelChanged, inputChanged);
 			EnvoiUserUdp(envoiBouton);
 			inputChanged = -1;
+		}
+
+		if(second == 1)
+		{
+			second=0;
+			for(i=0;i<4;i++)
+			{
+				for(j=0;j<4;j++)
+				{
+					messBouton[2] = i * 4 + j;
+					messBouton[3] = MultiplexGetState(i, j);
+					EnvoiUserUdp(envoiBouton);
+				}
+			}
 		}
 
         StackApplications();
